@@ -30,7 +30,6 @@ def trainModelGPU(net, train_loader, val_loader, optimizer, criterion, epochs=10
     epoch_val_acc_history = []
 
     # Early stopping parameters
-    min_delta = 0.001  # Minimum change to qualify as an improvement
     best_val_loss = float('inf')  # Initialize the best validation loss to a very large number
     increase_counter = 0  # Counter for consecutive increases in validation loss
 
@@ -80,6 +79,7 @@ def trainModelGPU(net, train_loader, val_loader, optimizer, criterion, epochs=10
                 labels = labels.to(device)
 
                 outputs = net(inputs)  # Forward pass
+                
                 val_loss = criterion(outputs, labels)  # Calculate validation loss
 
                 val_running_loss += val_loss.item()  # Accumulate validation loss
