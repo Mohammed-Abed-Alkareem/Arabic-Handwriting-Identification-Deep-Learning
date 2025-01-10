@@ -4,30 +4,30 @@ import numpy as np
 import random
 from tqdm import tqdm
 
-def save_original_image(img, output_path, img_name):
-    cv2.imwrite(os.path.join(output_path, f"original_{img_name}"), img)
+def save_original_image(img, output_path, img_name,i):
+    cv2.imwrite(os.path.join(output_path, f"original_{i}_{img_name}"), img)
 
-def apply_random_rotation(img, output_path, img_name):
+def apply_random_rotation(img, output_path, img_name,i):
     angle = random.uniform(-20, 20)
     height, width = img.shape[:2]
     rotation_matrix = cv2.getRotationMatrix2D((width // 2, height // 2), angle, 1)
     rotated_img = cv2.warpAffine(img, rotation_matrix, (width, height), borderMode=cv2.BORDER_REFLECT)
-    cv2.imwrite(os.path.join(output_path, f"rotated_{img_name}"), rotated_img)
+    cv2.imwrite(os.path.join(output_path, f"rotated_{i}_{img_name}"), rotated_img)
 
-def apply_random_translation(img, output_path, img_name):
+def apply_random_translation(img, output_path, img_name,i):
     height, width = img.shape[:2]
     tx = random.uniform(-0.2 * width, 0.2 * width)
     ty = random.uniform(-0.2 * height, 0.2 * height)
     translation_matrix = np.float32([[1, 0, tx], [0, 1, ty]])
     translated_img = cv2.warpAffine(img, translation_matrix, (width, height), borderMode=cv2.BORDER_REFLECT)
-    cv2.imwrite(os.path.join(output_path, f"translated_{img_name}"), translated_img)
+    cv2.imwrite(os.path.join(output_path, f"translated_{i}_{img_name}"), translated_img)
 
-def apply_random_illumination(img, output_path, img_name):
+def apply_random_illumination(img, output_path, img_name,i):
     illumination_factor = random.uniform(0.5, 1.5)
     illuminated_img = cv2.convertScaleAbs(img, alpha=illumination_factor, beta=0)
-    cv2.imwrite(os.path.join(output_path, f"illuminated_{img_name}"), illuminated_img)
+    cv2.imwrite(os.path.join(output_path, f"illuminated_{i}_{img_name}"), illuminated_img)
 
-def apply_random_scaling(img, output_path, img_name):
+def apply_random_scaling(img, output_path, img_name,i):
     height, width = img.shape[:2]
     scale = random.uniform(0.5, 1.5)
     scaled_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
@@ -42,9 +42,9 @@ def apply_random_scaling(img, output_path, img_name):
         left, right = delta_w // 2, delta_w - (delta_w // 2)
         scaled_img = cv2.copyMakeBorder(scaled_img, top, bottom, left, right, borderType=cv2.BORDER_REFLECT)
 
-    cv2.imwrite(os.path.join(output_path, f"scaled_{img_name}"), scaled_img)
+    cv2.imwrite(os.path.join(output_path, f"scaled_{i}_{img_name}"), scaled_img)
 
-def augment_images(input_root, output_root):
+def augment_images(input_root, output_root, d=2):
     os.makedirs(output_root, exist_ok=True)
 
     # Loop through each class directory
@@ -63,9 +63,9 @@ def augment_images(input_root, output_root):
                 continue
 
             # Apply augmentations
-            save_original_image(img, output_class_dir, img_name)
-            apply_random_rotation(img, output_class_dir, img_name)
-            apply_random_translation(img, output_class_dir, img_name)
-            apply_random_illumination(img, output_class_dir, img_name)
-            apply_random_scaling(img, output_class_dir, img_name)
-
+            for i in range(d):
+                
+                apply_random_rotation(img, output_class_dir, img_name,i)
+                apply_random_translation(img, output_class_dir, img_name,i)
+                apply_random_illumination(img, output_class_dir, img_name,i)
+                apply_random_scaling(img, output_class_dir, img_name,i)
